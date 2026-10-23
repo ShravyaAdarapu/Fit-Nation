@@ -1,0 +1,15 @@
+import {strict as assert} from 'node:assert';
+import {openStatus} from '../lib/branches.ts';
+const schedule=(sessions)=>({hoursVerified:true,hours:Array.from({length:7},(_,day)=>({day,sessions}))});
+const daytime=schedule([{open:'05:30',close:'11:00'},{open:'16:00',close:'22:00'}]);
+assert.equal(openStatus(daytime,new Date('2026-10-23T00:00:00Z')),'Open now','opening boundary in IST');
+assert.equal(openStatus(daytime,new Date('2026-10-23T05:30:00Z')),'Closed now','closing boundary');
+assert.equal(openStatus(daytime,new Date('2026-10-23T08:00:00Z')),'Closed now','split session break');
+assert.equal(openStatus(daytime,new Date('2026-10-23T12:00:00Z')),'Open now','evening session');
+const overnight=schedule([{open:'21:00',close:'02:00'}]);
+assert.equal(openStatus(overnight,new Date('2026-10-23T19:00:00Z')),'Open now','previous day overnight session');
+assert.equal(openStatus(overnight,new Date('2026-10-23T20:30:00Z')),'Closed now','overnight closing boundary');
+assert.equal(openStatus(schedule([])),'Closed now','confirmed closed all day');
+assert.equal(openStatus({hours:null,hoursVerified:false}),'Hours unconfirmed','never claim open without data');
+assert.equal(openStatus({...daytime,hoursVerified:false}),'Hours unconfirmed','unverified timetable');
+console.log('9 branch-hours checks passed');

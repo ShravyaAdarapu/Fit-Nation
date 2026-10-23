@@ -1,0 +1,18 @@
+.contact-section{display:grid;grid-template-columns:1fr 1fr;gap:10%;background:#eceee6;border-top:1px solid #d1d6c8}
+.contact-intro>p{font-size:13px;line-height:1.9;color:#626d57;max-width:350px;margin-top:25px}
+.contact-options{border-top:1px solid #c7cebb;align-self:center;min-width:0}
+.contact-option{display:flex;gap:22px;align-items:center;padding:26px 0;border-bottom:1px solid #c7cebb;min-height:100px}
+.contact-option>svg{color:#bf461a;flex-shrink:0}
+.contact-option>div,.contact-option>span{min-width:0}
+.contact-option h3,.contact-option strong{font-family:'DM Sans',sans-serif;font-size:14px;line-height:1.4;font-weight:600;display:block}
+.contact-option p,.contact-option small,.contact-option a{display:block;font-size:12px;color:#68745c;margin-top:7px;line-height:1.8;overflow-wrap:anywhere}
+.contact-option a{color:#a83912;text-decoration:underline;text-underline-offset:4px}
+.contact-enquiry{background:none;border:0;border-bottom:1px solid #c7cebb;width:100%;text-align:left;transition:background .2s}
+.contact-enquiry>svg:last-child{margin-left:auto}
+.contact-enquiry small{color:#b73e15;font-weight:500}
+.contact-enquiry:hover{background:#e2e7d8}
+.social>a{display:inline-grid;grid-template-columns:auto minmax(0,1fr) auto;gap:20px;max-width:100%;align-items:center}
+.social>a>span{min-width:0}
+.social>a>.social-instagram-icon{width:44px;height:44px;color:#bd4217;flex-shrink:0}
+@media(max-width:1000px){.contact-section{gap:7%}.social>a{gap:15px}.social>a>.social-instagram-icon{width:34px;height:34px}}
+@media(max-width:700px){.contact-section{grid-template-columns:1fr;gap:32px}.contact-intro>p{max-width:none;margin-top:22px}.contact-option{padding:23px 0;gap:20px;min-height:92px}.contact-option h3,.contact-option strong{font-size:14px}.contact-options{width:100%}.social>a{grid-template-columns:minmax(0,1fr) auto;column-gap:10px;row-gap:14px;font-size:clamp(20px,6vw,31px)}.social>a>.social-instagram-icon{grid-column:1/-1;justify-self:center;width:32px;height:32px}.social>a>svg:last-child{width:21px;height:21px}}

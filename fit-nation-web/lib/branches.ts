@@ -1,0 +1,27 @@
+import {sampleEquipment} from './sample-equipment';
+export type Session = { open: string; close: string };
+export type DayHours = { day: number; sessions: Session[] | null };
+export type Trainer = { name: string; role: string; photo: string | null; qualifications: string[]; specialties: string[]; availability: string | null; languages: string[] };
+export type Equipment = { category: string; items: {name: string; brand?: string; quantity?: number; detail?: string}[] };
+export type Branch = {id:string;name:string;area:string;source:string;address:string|null;mapUrl:string|null;coordinates:{lat:number;lng:number}|null;locationEvidence?:{status:'listing'|'confirmed'|'unresolved';note:string;sources:{label:string;url:string}[]};openingNote?:string;hours:DayHours[]|null;hoursVerified:boolean;holidayNote:string|null;phone:string|null;whatsapp:string|null;equipment:Equipment[]|null;equipmentIsSample?:boolean;trainers:Trainer[]|null;amenities:Record<string,boolean|null>;membershipNote:string|null;busyTimes:string|null;womenOnlyHours:string|null};
+const amenities={Parking:null,Lockers:null,Showers:null,'Air conditioning':null,'Drinking water':null,'Step-free access':null};
+const pending={address:null,mapUrl:null,coordinates:null,hours:null,hoursVerified:false,holidayNote:null,phone:null,whatsapp:null,equipment:null,trainers:null,amenities,membershipNote:null,busyTimes:null,womenOnlyHours:null};
+export const branches:Branch[]=[
+ {...pending,equipment:sampleEquipment.kothapet,equipmentIsSample:true,id:'kothapet',name:'Kothapet',area:'East Hyderabad',source:'Magicpin and Justdial business listings',address:'Laxmi Nagar Colony, Kothapet Road / New Nagole Road, Kothapet, Hyderabad, Telangana',coordinates:{lat:17.3712827,lng:78.5420416},mapUrl:'https://www.google.com/maps?q=17.3712827,78.5420416',locationEvidence:{status:'listing',note:'Pin from the Magicpin listing, checked 23 October 2026. Justdial lists the landmark as opposite Unisex Saloon. The two sources disagree on the postcode; the entrance and postcode still need confirmation.',sources:[{label:'Magicpin listing',url:'https://magicpin.in/Hyderabad/Maruthi-Nagar/Fitness/The-Fit-Nation-Hyderabad-Kothapet/store/186a26c'},{label:'Justdial listing',url:'https://www.justdial.com/Hyderabad/The-Fit-Nation-Hyderabad-Opp-Unisex-Saloon-Kothapet/040PXX40-XX40-240712161105-R5L8_BZDET'}]}},
+ {...pending,equipment:sampleEquipment.hayathnagar,equipmentIsSample:true,id:'hayathnagar',name:'Hayathnagar',area:'East Hyderabad',source:'Magicpin business listings',address:'KDR Towers, Plot 164, Road 6, Kolan Shiva Reddy Nagar, Kuntloor Road, near Mother Dairy, Hyderabad, Telangana 501505',locationEvidence:{status:'unresolved',note:'Street address found in two Magicpin listings, checked 23 October 2026. Their map pins disagree, so no exact pin is shown until the gym confirms the entrance.',sources:[{label:'Kuntloor listing',url:'https://magicpin.in/Hyderabad/Kuntloor/Fitness/The-Fit-Nation-Hyderabad-%7C-Hayathnagar/store/1a46230'},{label:'Vanasthalipuram listing',url:'https://magicpin.in/Hyderabad/Vanasthalipuram/Fitness/The-Fit-Nation-Hyderabad-%7C-Hayathnagar/store/181828a'}]}},
+ {...pending,equipment:sampleEquipment.moosarambagh,equipmentIsSample:true,id:'moosarambagh',name:'Moosarambagh',area:'Central Hyderabad',source:'Official Instagram collaboration',openingNote:'Announced as opening soon on Instagram. Opening date and current operating status need confirmation.',locationEvidence:{status:'unresolved',note:'The branch announcement does not provide a street address or map pin.',sources:[{label:'Branch announcement',url:'https://www.instagram.com/p/DetOHthoTIk/'}]}},
+ {...pending,equipment:sampleEquipment.nagole,equipmentIsSample:true,id:'nagole',name:'Nagole',area:'East Hyderabad',source:'Official Instagram collaboration',openingNote:'Instagram describes this branch as getting ready. Opening date and current operating status need confirmation.',locationEvidence:{status:'unresolved',note:'The branch profile does not provide a street address or map pin.',sources:[{label:'Branch Instagram',url:'https://www.instagram.com/fit_nation_nagole/'}]}},
+];
+export const dayNames=['Sunday','Monday','Tuesday','Wednesday','Thursday','Friday','Saturday'];
+export function formatTime(value:string){const [h,m]=value.split(':').map(Number);return `${h%12||12}:${String(m).padStart(2,'0')} ${h>=12?'PM':'AM'}`;}
+export function openStatus(branch:Pick<Branch,'hours'|'hoursVerified'>,date=new Date()):'Open now'|'Closed now'|'Hours unconfirmed'{
+ if(!branch.hoursVerified||!branch.hours)return 'Hours unconfirmed';
+ const parts=new Intl.DateTimeFormat('en-US',{timeZone:'Asia/Kolkata',weekday:'short',hour:'2-digit',minute:'2-digit',hourCycle:'h23'}).formatToParts(date);
+ const p=(type:string)=>parts.find(x=>x.type===type)?.value||'';
+ const day=['Sun','Mon','Tue','Wed','Thu','Fri','Sat'].indexOf(p('weekday'));const now=Number(p('hour'))*60+Number(p('minute'));
+ const minutes=(s:string)=>{const [h,m]=s.split(':').map(Number);return h*60+m;};
+ const today=branch.hours.find(h=>h.day===day)?.sessions;const yesterday=branch.hours.find(h=>h.day===(day+6)%7)?.sessions;
+ if(!today||!yesterday)return 'Hours unconfirmed';
+ if(today.some(s=>{const a=minutes(s.open),b=minutes(s.close);return a===b|| (b>a?now>=a&&now<b:now>=a);})||yesterday.some(s=>minutes(s.close)<minutes(s.open)&&now<minutes(s.close)))return 'Open now';
+ return 'Closed now';
+}

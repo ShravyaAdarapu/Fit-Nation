@@ -1,0 +1,7 @@
+'use client';
+import {ArrowUpRight,Clock,MapPin} from 'lucide-react';
+import {branches,openStatus} from '../lib/branches';
+import BranchMap from './branch-map';
+export default function BranchExplorer({selected,setSelected}:{selected:string;setSelected:(id:string)=>void}){const branch=branches.find(b=>b.id===selected)!;
+ return <section className="branch-explorer" aria-labelledby="map-explorer-title"><div className="explorer-title"><div><span className="section-kicker">GET TO KNOW YOUR NEIGHBOURHOOD</span><h3 id="map-explorer-title">A little closer to your next session.</h3></div><span className="verification">4 LOCATIONS FOUND · FULL LIST PENDING</span></div><div className="explorer-grid"><div className="explorer-options" role="group" aria-label="Choose a branch to explore">{branches.map(b=><button key={b.id} aria-pressed={b.id===selected} onClick={()=>setSelected(b.id)}><span><MapPin size={16}/>{b.name}</span><ArrowUpRight size={18}/></button>)}<p>Two street addresses found. Nagole and Moosarambagh have opening announcements; two more branches still need to be identified.</p></div><BranchMap branch={branch}/></div><div className="explorer-summary"><span><Clock size={15}/>{openStatus(branch)}</span><a href="#team">VIEW {branch.name.toUpperCase()} TRAINERS <ArrowUpRight size={16}/></a><a href={`/branches/${branch.id}`}>EXPLORE {branch.name.toUpperCase()} <ArrowUpRight size={16}/></a></div></section>;
+}

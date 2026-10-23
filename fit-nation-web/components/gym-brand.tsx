@@ -1,0 +1,1 @@
+export default function GymBrand(){return <a className="brand official-brand" href="/" aria-label="Fit Nation Hyderabad home"><img src="/fit-nation-official-logo.jpg" alt="The Fit Nation Hyderabad official crest logo" width={150} height={150}/><span>FIT NATION<small>HYDERABAD</small></span></a>;}
