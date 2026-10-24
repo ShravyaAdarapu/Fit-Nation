@@ -36,8 +36,8 @@
 .cinema-motion-toggle{display:flex;align-items:center;justify-content:center;gap:9px;min-height:44px;padding:10px 14px;color:#dbe1e6;background:#0d131890;border:1px solid #ffffff40;border-radius:30px;font-size:8px;letter-spacing:.08em}
 .cinema-motion-toggle:hover{border-color:#f4f8fb;background:#0d1318}
 .nation-marquee{background:var(--accent-fill);overflow:hidden;color:#121a21;padding:17px 0}
-.nation-marquee>div{display:flex;width:max-content;animation:nation-drift 30s linear infinite}
-.nation-marquee-group{display:flex;gap:40px;align-items:center;padding-right:40px;flex-shrink:0;font-family:'Barlow Condensed',Impact,sans-serif;font-weight:700;font-size:38px;line-height:1}
+.nation-marquee>div{display:flex;width:max-content;animation:nation-drift 90s linear infinite}
+.nation-marquee-group{display:flex;min-width:100vw;justify-content:space-around;white-space:nowrap;gap:40px;align-items:center;padding-right:40px;flex-shrink:0;font-family:'Barlow Condensed',Impact,sans-serif;font-weight:700;font-size:38px;line-height:1}
 .nation-marquee-group b{font-family:Arial,sans-serif;font-size:31px;font-weight:400}
 .training-story{position:relative;isolation:isolate;color:#f4f8fb;background:#0e1419;min-height:720px;overflow:hidden;display:flex;flex-direction:column;justify-content:space-between;padding:65px 6% 48px}
 .story-photo,.story-photo-shade{position:absolute;inset:0;z-index:-1}

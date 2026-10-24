@@ -1,6 +1,6 @@
 'use client';
 
-import {useEffect, useRef, useState} from 'react';
+import {Fragment, useEffect, useRef, useState} from 'react';
 import {ArrowUpRight} from 'lucide-react';
 
 export default function CinematicHero({onVisit}: {onVisit: () => void}) {
@@ -57,6 +57,6 @@ export default function CinematicHero({onVisit}: {onVisit: () => void}) {
         <div className="cinema-actions"><button className="button" onClick={onVisit}>FIND YOUR START <ArrowUpRight size={19}/></button><a href="#locations">EXPLORE OUR BRANCHES <ArrowUpRight size={17}/></a></div>
       </div>
     </section>
-    <div className="nation-marquee" aria-hidden="true"><div>{[0,1].map(n => <span className="nation-marquee-group" key={n}><span>YOUR PACE.</span><b>↗</b><span>YOUR PROGRESS.</span><b>↗</b><span>YOUR NATION.</span><b>↗</b></span>)}</div></div>
+    <div className="nation-marquee" aria-hidden="true"><div>{[0,1].map(n => <span className="nation-marquee-group" key={n}>{[0,1,2].map(repeat => <Fragment key={repeat}><span>YOUR PACE.</span><b>↗</b><span>YOUR PROGRESS.</span><b>↗</b><span>YOUR NATION.</span><b>↗</b></Fragment>)}</span>)}</div></div>
   </>;
 }
