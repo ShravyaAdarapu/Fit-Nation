@@ -5,6 +5,7 @@ import "./home-details.css";
 import "./experience.css";
 import "./site-header.css";
 import "./contact.css";
+import "./cinematic.css";
 
 export const metadata: Metadata = {
   title: "Fit Nation Hyderabad | Show up. Get stronger.",
