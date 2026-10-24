@@ -13,7 +13,7 @@ type Config = {
   db?: D1Database;
   secret?: string;
   enabled: boolean;
-  sendCode?: (email: string, code: string) => Promise<void>;
+  sendCode?: (email: string, code: string, siteOrigin: string) => Promise<void>;
   now?: () => number;
 };
 type Challenge = {id: string; email: string; code_hash: string; browser_hash: string; expires_at: number; attempts: number; used_at: number | null};
@@ -149,7 +149,7 @@ export function createMemberAuth(config: Config) {
           db.prepare('INSERT INTO auth_challenges (id, email, email_hash, code_hash, browser_hash, created_at, expires_at, attempts) VALUES (?, ?, ?, ?, ?, ?, ?, 0)')
             .bind(id, email, emailHash, codeHash, await hash(browserToken), now, now + CODE_LIFETIME),
         ]);
-        try {await config.sendCode!(email, code);} catch {
+        try {await config.sendCode!(email, code, new URL(request.url).origin);} catch {
           await db.prepare('DELETE FROM auth_challenges WHERE id = ?').bind(id).run();
           throw new AuthError('We couldn’t send your code. Please try again shortly.', 503);
         }

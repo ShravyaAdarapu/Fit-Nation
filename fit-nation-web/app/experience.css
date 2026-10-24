@@ -17,6 +17,8 @@
 .program-bottom-note{display:block;font-size:10px;color:#adb7a1}
 .login-alternatives button:disabled{opacity:.55;cursor:not-allowed}
 .login-provider-note{text-align:center;font-size:10px}
+.login-skip{display:block;margin:14px auto 0;padding:10px 4px;min-height:44px;border:0;background:none;color:#bdc9b4;font-size:9px;letter-spacing:.04em;text-decoration:underline;text-underline-offset:4px}
+.login-skip:disabled{opacity:.5;cursor:wait}
 .login-setup-note{margin-top:20px;background:#242a20;border:1px solid #4a573d;border-radius:5px;padding:14px;color:#c2cdb8;font-size:12px;line-height:1.8}
 .login-setup-note button{background:none;border:0;padding:0;color:#ff916c;text-decoration:underline;min-height:32px}
 .login-continue:disabled{opacity:.45;cursor:not-allowed;transform:none}

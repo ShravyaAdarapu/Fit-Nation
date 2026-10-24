@@ -5,6 +5,11 @@ import {clickedBackdrop} from '../lib/dialog';
 
 type User = {email: string};
 type LoginStatus = 'loading' | 'ready' | 'setup' | 'error';
+const WELCOME_SEEN = 'fn-email-welcome-seen-v1';
+
+function rememberPrompt() {
+  try {localStorage.setItem(WELCOME_SEEN, '1');} catch { /* Browsing remains available when storage is blocked. */ }
+}
 
 async function readResponse(response: Response) {
   const value: unknown = await response.json();
@@ -26,8 +31,9 @@ async function post(path: string, body: unknown) {
   return result;
 }
 
-export default function MemberLogin({onOpen}: {onOpen?: () => void}) {
+export default function MemberLogin({onOpen, autoPrompt = false}: {onOpen?: () => void; autoPrompt?: boolean}) {
   const dialog = useRef<HTMLDialogElement>(null);
+  const attemptedPrompt = useRef(false);
   const [status, setStatus] = useState<LoginStatus>('loading');
   const [user, setUser] = useState<User | null>(null);
   const [step, setStep] = useState<'email' | 'code'>('email');
@@ -50,12 +56,26 @@ export default function MemberLogin({onOpen}: {onOpen?: () => void}) {
   }
   useEffect(() => {void refresh();}, []);
   useEffect(() => {
+    if (!autoPrompt || status !== 'ready' || user || attemptedPrompt.current) return;
+    try {if (localStorage.getItem(WELCOME_SEEN)) return;} catch { /* Try once in this page when storage is unavailable. */ }
+    if (location.hash || new URLSearchParams(location.search).has('branch')) return;
+    const timer = setTimeout(() => {
+      if (document.querySelector('dialog[open]')) return;
+      attemptedPrompt.current = true;
+      rememberPrompt();
+      onOpen?.();
+      dialog.current?.showModal();
+    }, 900);
+    return () => clearTimeout(timer);
+  }, [autoPrompt, status, user, onOpen]);
+  useEffect(() => {
     if (step !== 'code') return;
     const timer = setInterval(() => setNow(Date.now()), 1000);
     return () => clearInterval(timer);
   }, [step]);
 
   function open() {
+    attemptedPrompt.current = true; rememberPrompt();
     onOpen?.(); setStep('email'); setEmail(''); setCode(''); setChallengeId(''); setError('');
     void refresh(); dialog.current?.showModal();
   }
@@ -97,7 +117,7 @@ export default function MemberLogin({onOpen}: {onOpen?: () => void}) {
       <button className="login-close" aria-label="Close login" onClick={() => dialog.current?.close()}><X size={21}/></button>
       <div className="login-brand"><img src="/fit-nation-official-logo.jpg" alt="Fit Nation Hyderabad official logo"/><strong>FIT NATION</strong><span>HYDERABAD</span></div>
       <div className="login-heading"><p className="login-kicker">YOUR NEXT CHAPTER STARTS HERE</p><h2 id="login-title">{user ? 'YOU’RE SIGNED IN.' : step === 'code' ? 'CHECK YOUR EMAIL.' : 'WELCOME TO YOUR NATION.'}</h2>
-        <p id="login-description" className="login-demo-note">{user ? 'Your Fit Nation account' : step === 'code' ? 'Enter your one-time login code. It expires in 10 minutes.' : 'Sign in with a code sent to your email. No password needed.'}</p>
+        <p id="login-description" className="login-demo-note">{user ? 'Your Fit Nation account' : step === 'code' ? 'Enter your one-time login code. It expires in 10 minutes.' : 'Get your sign-in code and first-visit guide by email. No password needed.'}</p>
       </div>
       {user ? <div className="login-complete"><span><Check size={27}/></span><p className="member-account-email">{user.email}</p><p>Explore your branch and arrange your next visit. Gym memberships are managed separately by the team.</p><button className="login-continue" onClick={() => dialog.current?.close()}>EXPLORE FIT NATION <ArrowRight size={18}/></button><button className="login-signout" disabled={busy} onClick={logout}><LogOut size={16}/>{busy ? 'SIGNING OUT…' : 'SIGN OUT'}</button></div> :
         <form className="login-form" onSubmit={submit} noValidate>
@@ -113,11 +133,12 @@ export default function MemberLogin({onOpen}: {onOpen?: () => void}) {
             <input className="login-code" id="member-code" autoFocus type="text" inputMode="numeric" autoComplete="one-time-code" maxLength={6} placeholder="000000" value={code} disabled={busy} onChange={event => setCode(event.target.value.replace(/\D/g, ''))} aria-invalid={!!error} aria-describedby={error ? 'login-error' : undefined}/>
             <p className="login-provider-note">Check your spam folder if the email hasn’t arrived.</p>
           </>}
-          <button className="login-continue" type="submit" disabled={busy || (step === 'email' && status !== 'ready')}>{busy ? 'PLEASE WAIT…' : step === 'code' ? 'VERIFY & SIGN IN' : status === 'loading' ? 'CHECKING AVAILABILITY…' : 'SEND LOGIN CODE'}<ArrowRight size={18}/></button>
+          <button className="login-continue" type="submit" disabled={busy || (step === 'email' && status !== 'ready')}>{busy ? 'PLEASE WAIT…' : step === 'code' ? 'VERIFY & SIGN IN' : status === 'loading' ? 'CHECKING AVAILABILITY…' : 'EMAIL MY CODE & GUIDE'}<ArrowRight size={18}/></button>
           {step === 'code' && <button className="login-resend" type="button" disabled={busy || seconds > 0} onClick={sendCode}>{seconds > 0 ? `Resend code in ${seconds}s` : 'Resend code'}</button>}
         </form>}
       {error && <p id="login-error" className="login-error" role="alert">{error}</p>}
-      <p className="login-privacy">Email sign-in · <a href="/privacy">Privacy notice</a></p>
+      {!user && <button className="login-skip" type="button" disabled={busy} onClick={() => dialog.current?.close()}>SKIP FOR NOW — EXPLORE THE GYM</button>}
+      <p className="login-privacy">No marketing subscription · <a href="/privacy">Privacy notice</a></p>
     </dialog>
   </>;
 }

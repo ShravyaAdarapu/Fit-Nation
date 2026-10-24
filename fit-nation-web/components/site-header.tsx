@@ -27,7 +27,7 @@ export default function SiteHeader({onVisit, visitHref, home = false}: {onVisit?
       </nav>
       <div className="header-actions">
         {visitHref ? <a className="button small header-visit" href={visitHref}>BOOK A VISIT <ArrowUpRight size={16}/></a> : <button className="button small header-visit" onClick={() => {setMenuOpen(false); onVisit?.();}}>BOOK A VISIT <ArrowUpRight size={16}/></button>}
-        <MemberLogin onOpen={() => setMenuOpen(false)}/>
+        <MemberLogin autoPrompt={home} onOpen={() => setMenuOpen(false)}/>
         <button ref={menuButton} className="navigation-toggle" aria-label={menuOpen ? 'Close navigation' : 'Open navigation'} aria-expanded={menuOpen} aria-controls="site-navigation" onClick={() => setMenuOpen(!menuOpen)}>{menuOpen ? <X size={22}/> : <Menu size={22}/>}</button>
       </div>
     </header>

@@ -3,7 +3,7 @@ import {strict as assert} from 'node:assert';
 import {DatabaseSync} from 'node:sqlite';
 import {readFileSync, readdirSync} from 'node:fs';
 import {createMemberAuth} from '../lib/member-auth.ts';
-import {sendLoginEmail} from '../lib/sendpulse.ts';
+import {sendLoginEmail, loginEmailText} from '../lib/sendpulse.ts';
 
 function harness({deliveryFails = false, enabled = true} = {}) {
   const sqlite = new DatabaseSync(':memory:');
@@ -163,4 +163,24 @@ test('SendPulse adapter requires provider acceptance and keeps API key server-si
   });
   assert.equal(calls, 1);
   await assert.rejects(sendLoginEmail({apiKey: 'test', fromEmail: 'login@gym.test'}, 'member@example.com', '234567', async () => Response.json({result: false})), /unavailable/);
+});
+
+test('code and welcome guide use one email with links for the current website origin', async () => {
+  const text = loginEmailText('234567', 'https://fit-nation.hyderabad.workers.dev/');
+  assert.match(text, /234567/);
+  assert.match(text, /WELCOME TO YOUR NATION/);
+  for (const branch of ['kothapet', 'hayathnagar', 'moosarambagh', 'nagole']) {
+    assert.ok(text.includes(`https://fit-nation.hyderabad.workers.dev/branches/${branch}`));
+  }
+  assert.ok(text.includes('awaiting confirmation'));
+  assert.ok(text.includes('not a marketing subscription'));
+  assert.throws(() => loginEmailText('234567', 'javascript:alert(1)'), /Invalid website origin/);
+  let sends = 0;
+  await sendLoginEmail({apiKey: 'test', fromEmail: 'login@gym.test', siteOrigin: 'https://gym.test'}, 'member@example.com', '234567', async (_, options) => {
+    sends++;
+    const payload = JSON.parse(options.body);
+    assert.ok(payload.email.text.includes('https://gym.test/#locations'));
+    return Response.json({result: true, id: 'test-message-id'});
+  });
+  assert.equal(sends, 1);
 });
