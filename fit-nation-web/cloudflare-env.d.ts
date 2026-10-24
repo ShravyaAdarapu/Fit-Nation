@@ -6,5 +6,6 @@ declare namespace Cloudflare {
     SENDPULSE_FROM_EMAIL?: string;
     EMAIL_OTP_SECRET?: string;
     EMAIL_OTP_ENABLED?: string;
+    STANDALONE_HOSTING?: string;
   }
 }
