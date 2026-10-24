@@ -1,4 +1,4 @@
-type SendPulseConfig = {apiKey: string; fromEmail: string; siteOrigin?: string};
+type EmailConfig = {provider?: 'sendpulse' | 'brevo'; apiKey: string; fromEmail: string; siteOrigin?: string};
 
 export function loginEmailText(code: string, siteOrigin?: string) {
   const security = `Your Fit Nation Hyderabad login code is ${code}.\n\nThis code expires in 10 minutes and can only be used once. Do not share it. If you did not request this email, you can ignore it.`;
@@ -12,19 +12,27 @@ export function loginEmailText(code: string, siteOrigin?: string) {
 }
 
 // Delivery only. Code generation, verification and sessions stay on our server.
-export async function sendLoginEmail(config: SendPulseConfig, email: string, code: string, transport: typeof fetch = fetch) {
-  const response = await transport('https://api.sendpulse.com/smtp/emails', {
+export async function sendLoginEmail(config: EmailConfig, email: string, code: string, transport: typeof fetch = fetch) {
+  const subject = 'Your Fit Nation code and first-visit guide';
+  const text = loginEmailText(code, config.siteOrigin);
+  const brevo = config.provider === 'brevo';
+  const headers: Record<string, string> = {'Content-Type': 'application/json'};
+  if (brevo) headers['api-key'] = config.apiKey;
+  else headers.Authorization = `Bearer ${config.apiKey}`;
+  const response = await transport(brevo ? 'https://api.brevo.com/v3/smtp/email' : 'https://api.sendpulse.com/smtp/emails', {
     method: 'POST',
-    headers: {'Content-Type': 'application/json', Authorization: `Bearer ${config.apiKey}`},
-    body: JSON.stringify({email: {
-      subject: 'Your Fit Nation code and first-visit guide',
-      text: loginEmailText(code, config.siteOrigin),
+    headers,
+    body: JSON.stringify(brevo ? {
+      sender: {name: 'Fit Nation Hyderabad', email: config.fromEmail},
+      to: [{email}], subject, textContent: text,
+    } : {email: {
+      subject, text,
       from: {name: 'Fit Nation Hyderabad', email: config.fromEmail},
       to: [{email}],
     }}),
     signal: AbortSignal.timeout(10_000),
   });
   if (!response.ok) throw new Error('Email delivery unavailable');
-  const result = await response.json() as {result?: boolean; id?: string};
-  if (result.result !== true || !result.id) throw new Error('Email delivery unavailable');
+  const result = await response.json() as {result?: boolean; id?: string; messageId?: string};
+  if (brevo ? !result.messageId : (result.result !== true || !result.id)) throw new Error('Email delivery unavailable');
 }

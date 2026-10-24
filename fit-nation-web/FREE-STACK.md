@@ -9,7 +9,7 @@ No paid SDK, API key, plugin, subscription, map API or messaging provider has be
 - Google Fonts are free to use; the site does not use paid font services.
 - OpenStreetMap is embedded with visible contributor attribution. No map API key, paid geocoder, routing API or commercial map SDK is used. External Google Maps searches/directions are ordinary links, not paid Google Maps API calls.
 - No premium theme, automated AI API, analytics subscription, SMS or WhatsApp Business API is required.
-- SendPulse email OTP integration is prepared but disabled pending an owner-controlled account, approved sender and runtime secrets. App budgets restrict sending; provider quotas, other account usage and future prices still need monitoring. No paid plan or credits have been activated. See LOGIN-SETUP.md.
+- Brevo/SendPulse email OTP and welcome integration is prepared but disabled pending an owner-controlled account, verified sender and runtime secrets. App budgets restrict sending; provider quotas, other account usage and future prices still need monitoring. No paid plan or credits have been activated. See LOGIN-SETUP.md.
 
 ## Hosting
 The current private preview is deployed through Sites. Its account-level billing/entitlements are not exposed to this project, so this file does not claim that the managed Sites hosting is guaranteed free. Existing ChatGPT/Codex subscription costs are separate from the website software.

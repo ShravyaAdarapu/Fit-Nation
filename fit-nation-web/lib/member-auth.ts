@@ -132,7 +132,9 @@ export function createMemberAuth(config: Config) {
         await rate(db, secret, `send-ip:${ip}:${tenMinutes}`, 5, (tenMinutes + 1) * 600_000);
         await cooldown(db, secret, email, now);
         await rate(db, secret, `send-email:${email}:${hour}`, 3, (hour + 1) * 3_600_000);
-        // Conservative application caps preserve room below SendPulse's free limits.
+        // Conservative caps preserve headroom below the supported providers' free limits.
+        const day = Math.floor(now / 86_400_000);
+        await rate(db, secret, `send-global-day:${day}`, 250, (day + 1) * 86_400_000);
         const quarterHour = Math.floor(now / 900_000);
         await rate(db, secret, `send-global-quarter:${quarterHour}`, 10, (quarterHour + 1) * 900_000);
         await rate(db, secret, `send-global-hour:${hour}`, 40, (hour + 1) * 3_600_000);

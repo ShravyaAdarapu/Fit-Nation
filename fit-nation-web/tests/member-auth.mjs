@@ -3,7 +3,7 @@ import {strict as assert} from 'node:assert';
 import {DatabaseSync} from 'node:sqlite';
 import {readFileSync, readdirSync} from 'node:fs';
 import {createMemberAuth} from '../lib/member-auth.ts';
-import {sendLoginEmail, loginEmailText} from '../lib/sendpulse.ts';
+import {sendLoginEmail, loginEmailText} from '../lib/email-delivery.ts';
 
 function harness({deliveryFails = false, enabled = true} = {}) {
   const sqlite = new DatabaseSync(':memory:');
@@ -183,4 +183,33 @@ test('code and welcome guide use one email with links for the current website or
     return Response.json({result: true, id: 'test-message-id'});
   });
   assert.equal(sends, 1);
+});
+
+test('Brevo adapter authenticates server-side and requires a message ID', async () => {
+  let calls = 0;
+  await sendLoginEmail({provider: 'brevo', apiKey: 'test-api-key', fromEmail: 'gym@gmail.com', siteOrigin: 'https://gym.test'}, 'member@example.com', '234567', async (url, options) => {
+    calls++;
+    assert.equal(url, 'https://api.brevo.com/v3/smtp/email');
+    assert.equal(options.headers['api-key'], 'test-api-key');
+    assert.equal(options.headers.Authorization, undefined);
+    const payload = JSON.parse(options.body);
+    assert.equal(payload.sender.email, 'gym@gmail.com');
+    assert.equal(payload.to[0].email, 'member@example.com');
+    assert.ok(payload.textContent.includes('234567'));
+    assert.ok(payload.textContent.includes('https://gym.test/#locations'));
+    return Response.json({messageId: 'test-message-id'}, {status: 201});
+  });
+  assert.equal(calls, 1);
+  await assert.rejects(sendLoginEmail({provider: 'brevo', apiKey: 'test', fromEmail: 'gym@gmail.com'}, 'member@example.com', '234567', async () => Response.json({})), /unavailable/);
+  await assert.rejects(sendLoginEmail({provider: 'brevo', apiKey: 'test', fromEmail: 'gym@gmail.com'}, 'member@example.com', '234567', async () => Response.json({error: 'private'}, {status: 401})), /unavailable/);
+});
+
+test('daily email budget prevents sends beyond the free-plan reserve', async () => {
+  const h = harness();
+  await challenge(h);
+  const expiry = Math.floor(Date.UTC(2026, 9, 24, 12, 5) / 86_400_000 + 1) * 86_400_000;
+  h.sqlite.prepare('UPDATE auth_rate_limits SET count = 250 WHERE expires_at = ?').run(expiry);
+  const response = await h.auth.requestCode(request('request-code', {email: 'another@example.com'}, {ip: '192.0.2.20'}));
+  assert.equal(response.status, 429);
+  assert.equal(h.sent.length, 1);
 });

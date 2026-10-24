@@ -25,16 +25,21 @@ They do not apply migrations. Deploy production first to initialize the database
 
 ## Email OTP
 
-After SendPulse SMTP and the sender are approved, set the following Worker runtime
+For the gym's existing Gmail address, create a Brevo Free account and verify its
+sender first. Set the following Worker runtime
 variables / secrets in Cloudflare Settings (not just build variables):
 
-- `SENDPULSE_API_KEY`: secret, SendPulse REST API key (not SMTP password)
-- `SENDPULSE_FROM_EMAIL`: approved sender address
+- `EMAIL_PROVIDER`: `brevo`
+- `BREVO_API_KEY`: secret, Brevo API key (not SMTP key)
+- `BREVO_FROM_EMAIL`: verified sender address
 - `EMAIL_OTP_SECRET`: secret, at least 32 cryptographically random bytes, hex/base64 encoded
 - `EMAIL_OTP_ENABLED`: `true`, only when all the above are configured
 
 Login stays disabled until these are configured. Redeploy after adding runtime settings.
 Dashboard runtime variables are retained by the generated configuration.
+The app caps sends at 250/day, with additional hourly/monthly limits. One email
+contains both the code and the welcome/branch guide. See LOGIN-SETUP.md for the
+provider's sender rewriting behavior and optional SendPulse configuration.
 
 ## Verify after deployment
 
