@@ -1,0 +1,38 @@
+/* Shared motion for every public page; only transform/opacity during scrolling. */
+.scroll-progress{position:fixed;inset:0 0 auto;z-index:60;height:3px;pointer-events:none}
+.scroll-progress>span{display:block;height:100%;background:linear-gradient(90deg,#00789e,#25bee8,#b9ecfa);transform:scaleX(var(--read-progress,0));transform-origin:left;box-shadow:0 0 10px #25bee855}
+.site-header{transition:box-shadow .3s,background .3s}
+.site-header.has-scrolled{background:#f4f8fbf5;box-shadow:0 6px 26px #071f2e12}
+.motion-reveal{--reveal-y:30px;--reveal-scale:1;transition:opacity .7s cubic-bezier(.22,1,.36,1),transform .9s cubic-bezier(.22,1,.36,1);transition-delay:var(--reveal-delay,0ms)}
+.motion-reveal.motion-heading{--reveal-y:42px}
+.motion-reveal.motion-card{--reveal-y:28px;--reveal-scale:.975}
+.motion-reveal:not(.motion-visible){opacity:0;transform:translate3d(0,var(--reveal-y),0) scale(var(--reveal-scale))}
+.motion-reveal.motion-visible{opacity:1;transform:translate3d(0,0,0) scale(1)}
+.story-photo>img,.training-story.motion-visible .story-photo>img{transform:translate3d(0,var(--scene-shift,0px),0) scale(1.12);transition:none}
+.equipment-story figure{overflow:hidden}
+.equipment-story figure>img{transform:translate3d(0,var(--scene-shift,0px),0) scale(1.1);transition:filter .5s}
+.equipment-count-list>div{animation:inventory-arrive .45s cubic-bezier(.22,1,.36,1) both}
+.equipment-count-list>div:nth-child(2){animation-delay:50ms}.equipment-count-list>div:nth-child(3){animation-delay:100ms}.equipment-count-list>div:nth-child(4){animation-delay:150ms}
+.home-amenities>article>svg,.contact-option>svg:first-child,.info-heading>svg{transition:transform .35s,color .35s}
+.branch-title h3{transition:color .3s}
+.faq-item>p:not([hidden]){animation:answer-arrive .28s ease-out both}
+.faq-item button>svg{transition:transform .3s}
+.faq-item button[aria-expanded=true]>svg{transform:rotate(180deg)}
+.social>a>.social-instagram-icon{transition:transform .4s cubic-bezier(.22,1,.36,1)}
+@media(hover:hover) and (pointer:fine){
+ .home-amenities>article:hover{background:#25bee80a}.home-amenities>article:hover>svg,.contact-option:hover>svg:first-child{transform:translateY(-4px) rotate(-6deg);color:var(--accent)}
+ .trainer-card:hover{border-color:var(--accent)}.branch-card:hover .branch-title h3{color:var(--accent)}
+ .social>a:hover>.social-instagram-icon{transform:rotate(-8deg) scale(1.08)}
+ .equipment-story:hover figure>img{filter:saturate(.75)}
+}
+@keyframes inventory-arrive{from{opacity:0;transform:translateY(9px)}to{opacity:1;transform:translateY(0)}}
+@keyframes answer-arrive{from{opacity:0;transform:translateY(-5px)}to{opacity:1;transform:translateY(0)}}
+@media(max-width:700px){
+ .motion-reveal{--reveal-y:20px;transition-duration:.55s,.65s}.motion-reveal.motion-heading{--reveal-y:26px}.motion-reveal.motion-card{--reveal-y:20px;--reveal-scale:1}
+ .story-photo>img,.training-story.motion-visible .story-photo>img,.equipment-story figure>img{transform:none}
+}
+@media(prefers-reduced-motion:reduce){
+ .scroll-progress{display:none}.motion-reveal,.motion-reveal:not(.motion-visible),.motion-reveal.motion-visible{opacity:1;transform:none;transition:none}
+ .story-photo>img,.training-story.motion-visible .story-photo>img,.equipment-story figure>img{transform:none}
+ .home-amenities>article:hover>svg,.contact-option:hover>svg:first-child,.social>a:hover>.social-instagram-icon,.faq-item button[aria-expanded=true]>svg{transform:none}
+}

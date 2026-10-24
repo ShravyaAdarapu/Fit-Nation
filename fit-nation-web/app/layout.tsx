@@ -6,6 +6,8 @@ import "./experience.css";
 import "./site-header.css";
 import "./contact.css";
 import "./cinematic.css";
+import "./motion.css";
+import MotionEnhancer from "../components/motion-enhancer";
 
 export const metadata: Metadata = {
   title: "Fit Nation Hyderabad | Show up. Get stronger.",
@@ -23,7 +25,7 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
-      <body className="antialiased">{children}</body>
+      <body className="antialiased">{children}<MotionEnhancer/></body>
     </html>
   );
 }
