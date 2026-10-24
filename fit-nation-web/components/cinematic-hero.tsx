@@ -1,7 +1,7 @@
 'use client';
 
 import {useEffect, useRef, useState} from 'react';
-import {ArrowDown, ArrowUpRight, Pause, Play} from 'lucide-react';
+import {ArrowUpRight} from 'lucide-react';
 
 export default function CinematicHero({onVisit}: {onVisit: () => void}) {
   const video = useRef<HTMLVideoElement>(null);
@@ -40,11 +40,6 @@ export default function CinematicHero({onVisit}: {onVisit: () => void}) {
     return () => {observer.disconnect(); document.removeEventListener('visibilitychange', sync); player.pause();};
   }, [paused, source]);
 
-  function toggleMotion() {
-    if (!source && !failed) setSource(window.innerWidth <= 700 ? '/media/training-mobile.mp4' : '/media/training-desktop.mp4');
-    setPaused(value => !value);
-  }
-
   return <>
     <section ref={hero} className="hero cinema-hero" aria-labelledby="hero-title">
       <div className="cinema-media" aria-hidden="true">
@@ -61,7 +56,6 @@ export default function CinematicHero({onVisit}: {onVisit: () => void}) {
         <p>For the first rep. The next goal. The better you.<br/>Find your people. Find your Fit Nation.</p>
         <div className="cinema-actions"><button className="button" onClick={onVisit}>FIND YOUR START <ArrowUpRight size={19}/></button><a href="#locations">EXPLORE OUR BRANCHES <ArrowUpRight size={17}/></a></div>
       </div>
-      <div className="cinema-bottom"><a className="cinema-scroll" href="#experience"><span className="cinema-scroll-icon"><ArrowDown size={17}/></span><span>THERE’S MORE IN YOU.<small>SCROLL TO DISCOVER</small></span></a><span className="cinema-footage">TRAINING IN MOTION <small>ILLUSTRATIVE STOCK FOOTAGE</small></span><button className="cinema-motion-toggle" onClick={toggleMotion} aria-label={paused ? 'Play background motion' : 'Pause background motion'} aria-pressed={paused}>{paused ? <Play size={14}/> : <Pause size={14}/>}<span>{paused ? 'PLAY MOTION' : 'PAUSE MOTION'}</span></button></div>
     </section>
     <div className="nation-marquee" aria-hidden="true"><div>{[0,1].map(n => <span className="nation-marquee-group" key={n}><span>YOUR PACE.</span><b>↗</b><span>YOUR PROGRESS.</span><b>↗</b><span>YOUR NATION.</span><b>↗</b></span>)}</div></div>
   </>;
