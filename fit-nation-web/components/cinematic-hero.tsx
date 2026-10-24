@@ -57,7 +57,7 @@ export default function CinematicHero({onVisit}: {onVisit: () => void}) {
       <svg className="cinema-ribbon" viewBox="0 0 1440 800" preserveAspectRatio="none" aria-hidden="true"><path d="M-160 600C160 115 325 835 760 435S1310 355 1590 40"/><path d="M-100 650C190 200 350 880 795 485S1320 420 1580 120"/></svg>
       <div className="cinema-content">
         <span className="cinema-kicker">YOUR NEXT CHAPTER STARTS WITH YOU.</span>
-        <h1 id="hero-title"><span className="cinema-title-line">SHOW UP.</span><span className="cinema-title-line cinema-title-orange">GET STRONGER<span className="cinema-period">.</span></span></h1>
+        <h1 id="hero-title"><span className="cinema-title-line">SHOW UP.</span><span className="cinema-title-line cinema-title-accent">GET STRONGER<span className="cinema-period">.</span></span></h1>
         <p>For the first rep. The next goal. The better you.<br/>Find your people. Find your Fit Nation.</p>
         <div className="cinema-actions"><button className="button" onClick={onVisit}>FIND YOUR START <ArrowUpRight size={19}/></button><a href="#locations">EXPLORE OUR BRANCHES <ArrowUpRight size={17}/></a></div>
       </div>
